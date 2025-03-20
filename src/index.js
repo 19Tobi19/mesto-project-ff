@@ -16,6 +16,7 @@ initialCards.forEach((cardData) => {
 });
 
 const popupImg = document.querySelector(".popup_type_image");
+popupImg.addEventListener("click", closeOverlay);
 
 const addBtnCard = document.querySelector(".profile__add-button");
 const popupNewCard = document.querySelector(".popup_type_new-card");
