@@ -1,44 +1,45 @@
 import "./pages/index.css";
 import { initialCards } from "./scripts/cards.js";
-import { createCard, deleteCard, toggleLike, openImg } from "./scripts/card.js";
+import { createCard, deleteCard, toggleLike } from "./scripts/card.js";
 import {
   openModal,
   closeModal,
   closeEsc,
-  closeOverlay,
+  handleCloseModalByClick,
 } from "./scripts/modal.js";
 
-const placesList = document.querySelector(".places__list");
+const cardsContainer = document.querySelector(".places__list");
 
 initialCards.forEach((cardData) => {
   const cardElement = createCard(cardData, deleteCard, toggleLike, openImg);
-  placesList.append(cardElement);
+  cardsContainer.append(cardElement);
 });
 
+const popupImage = document.querySelector(".popup__image");
+const popupCaption = document.querySelector(".popup__caption");
+const popup = document.querySelector(".popup_type_image");
 const popupImg = document.querySelector(".popup_type_image");
-popupImg.addEventListener("click", closeOverlay);
-
 const addBtnCard = document.querySelector(".profile__add-button");
 const popupNewCard = document.querySelector(".popup_type_new-card");
 const formCard = popupNewCard.querySelector(".popup__form");
+const name = formCard.querySelector(".popup__input_type_card-name").value;
+const link = formCard.querySelector(".popup__input_type_url").value;
 
-addBtnCard.addEventListener("click", () => {
-  openModal(popupNewCard);
-});
+function openImg(imageLink, imageName) {
+  popupImage.src = imageLink;
+  popupCaption.textContent = imageName;
 
-popupNewCard.addEventListener("click", closeOverlay);
+  openModal(popup);
+}
 
 formCard.addEventListener("submit", function (event) {
   event.preventDefault();
-
-  const name = formCard.querySelector(".popup__input_type_card-name").value;
-  const link = formCard.querySelector(".popup__input_type_url").value;
 
   const cardData = { name, link };
 
   const cardElement = createCard(cardData, deleteCard, toggleLike, openImg);
 
-  placesList.prepend(cardElement);
+  cardsContainer.prepend(cardElement);
 
   closeModal(popupNewCard);
 
@@ -72,4 +73,12 @@ formProfile.addEventListener("submit", (event) => {
 
 editBtnProfile.addEventListener("click", openEditProfilePopup);
 
-editPopupProfile.addEventListener("click", closeOverlay);
+editPopupProfile.addEventListener("click", handleCloseModalByClick);
+
+popupImg.addEventListener("click", handleCloseModalByClick);
+
+addBtnCard.addEventListener("click", () => {
+  openModal(popupNewCard);
+});
+
+popupNewCard.addEventListener("click", handleCloseModalByClick);

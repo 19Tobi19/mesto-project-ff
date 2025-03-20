@@ -6,9 +6,10 @@ export function createCard({ name, link }, deleteCard, toggleLike, openImg) {
 
   cardElement.querySelector(".card__title").textContent = name;
   cardElement.querySelector(".card__image").src = link;
+  cardElement.querySelector(".card__image").alt = name;
 
   const deleteBtn = cardElement.querySelector(".card__delete-button");
-  deleteBtn.addEventListener("click", deleteCard);
+  deleteBtn.addEventListener("click", (event) => deleteCard(event));
 
   const likeButton = cardElement.querySelector(".card__like-button");
   likeButton.addEventListener("click", () => toggleLike(likeButton));
@@ -20,21 +21,12 @@ export function createCard({ name, link }, deleteCard, toggleLike, openImg) {
 }
 
 export function deleteCard() {
-  const card = this.parentElement;
-  card.remove();
+  const cardElement = event.target.closest(".places__item");
+  if (cardElement) {
+    cardElement.remove();
+  }
 }
 
 export function toggleLike(likeButton) {
   likeButton.classList.toggle("card__like-button_is-active");
-}
-
-export function openImg(imageLink, imageName) {
-  const popupImage = document.querySelector(".popup__image");
-  const popupCaption = document.querySelector(".popup__caption");
-  const popup = document.querySelector(".popup_type_image");
-
-  popupImage.src = imageLink;
-  popupCaption.textContent = imageName;
-
-  popup.classList.add("popup_is-opened");
 }
