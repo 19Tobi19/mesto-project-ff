@@ -19,9 +19,29 @@ const popupImg = document.querySelector(".popup_type_image");
 
 const addBtnCard = document.querySelector(".profile__add-button");
 const popupNewCard = document.querySelector(".popup_type_new-card");
+const formCard = popupNewCard.querySelector(".popup__form");
 
 addBtnCard.addEventListener("click", () => {
   openModal(popupNewCard);
+});
+
+popupNewCard.addEventListener("click", closeOverlay);
+
+formCard.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  const name = formCard.querySelector(".popup__input_type_card-name").value;
+  const link = formCard.querySelector(".popup__input_type_url").value;
+
+  const cardData = { name, link };
+
+  const cardElement = createCard(cardData, deleteCard, toggleLike, openImg);
+
+  placesList.prepend(cardElement);
+
+  closeModal(popupNewCard);
+
+  formCard.reset();
 });
 
 const editBtnProfile = document.querySelector(".profile__edit-button");
@@ -42,8 +62,10 @@ function openEditProfilePopup() {
 
 formProfile.addEventListener("submit", (event) => {
   event.preventDefault();
+
   profileName.textContent = nameInput.value;
   profileJob.textContent = jobInput.value;
+
   closeModal(editPopupProfile);
 });
 
