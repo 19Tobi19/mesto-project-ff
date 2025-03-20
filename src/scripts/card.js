@@ -5,8 +5,9 @@ export function createCard({ name, link }, deleteCard, toggleLike, openImg) {
     .cloneNode(true);
 
   cardElement.querySelector(".card__title").textContent = name;
-  cardElement.querySelector(".card__image").src = link;
-  cardElement.querySelector(".card__image").alt = name;
+  const cardImage = cardElement.querySelector(".card__image");
+  cardImage.src = link;
+  cardImage.alt = name;
 
   const deleteBtn = cardElement.querySelector(".card__delete-button");
   deleteBtn.addEventListener("click", (event) => deleteCard(event));
@@ -20,7 +21,7 @@ export function createCard({ name, link }, deleteCard, toggleLike, openImg) {
   return cardElement;
 }
 
-export function deleteCard() {
+export function deleteCard(event) {
   const cardElement = event.target.closest(".places__item");
   if (cardElement) {
     cardElement.remove();

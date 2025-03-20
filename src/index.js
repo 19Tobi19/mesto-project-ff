@@ -22,8 +22,8 @@ const popupImg = document.querySelector(".popup_type_image");
 const addBtnCard = document.querySelector(".profile__add-button");
 const popupNewCard = document.querySelector(".popup_type_new-card");
 const formCard = popupNewCard.querySelector(".popup__form");
-const name = formCard.querySelector(".popup__input_type_card-name").value;
-const link = formCard.querySelector(".popup__input_type_url").value;
+const cardNameInput = formCard.querySelector(".popup__input_type_card-name");
+const cardLinkInput = formCard.querySelector(".popup__input_type_url");
 
 function openImg(imageLink, imageName) {
   popupImage.src = imageLink;
@@ -36,7 +36,10 @@ function openImg(imageLink, imageName) {
 formCard.addEventListener("submit", function (event) {
   event.preventDefault();
 
-  const cardData = { name, link };
+  const cardData = {
+    name: cardNameInput.value,
+    link: cardLinkInput.value,
+  };
 
   const cardElement = createCard(cardData, deleteCard, toggleLike, openImg);
 
