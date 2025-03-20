@@ -28,6 +28,7 @@ const link = formCard.querySelector(".popup__input_type_url").value;
 function openImg(imageLink, imageName) {
   popupImage.src = imageLink;
   popupCaption.textContent = imageName;
+  popupImage.alt = imageName;
 
   openModal(popup);
 }
