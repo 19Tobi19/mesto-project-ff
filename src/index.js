@@ -8,6 +8,17 @@ import {
   handleCloseModalByClick,
 } from "./scripts/modal.js";
 
+import { enableValidation, clearValidation } from "./scripts/validation.js";
+
+const validationConfig = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
+};
+
 const cardsContainer = document.querySelector(".places__list");
 
 initialCards.forEach((cardData) => {
@@ -46,6 +57,7 @@ formCard.addEventListener("submit", function (event) {
   cardsContainer.prepend(cardElement);
 
   closeModal(popupNewCard);
+  clearValidation(formCard, validationConfig);
 
   formCard.reset();
 });
@@ -63,6 +75,7 @@ const formProfile = editPopupProfile.querySelector(".popup__form");
 function openEditProfilePopup() {
   nameInput.value = profileName.textContent;
   jobInput.value = profileJob.textContent;
+  clearValidation(formProfile, validationConfig);
   openModal(editPopupProfile);
 }
 
@@ -73,6 +86,7 @@ formProfile.addEventListener("submit", (event) => {
   profileJob.textContent = jobInput.value;
 
   closeModal(editPopupProfile);
+  clearValidation(formProfile, validationConfig);
 });
 
 editBtnProfile.addEventListener("click", openEditProfilePopup);
@@ -82,7 +96,10 @@ editPopupProfile.addEventListener("click", handleCloseModalByClick);
 popupImg.addEventListener("click", handleCloseModalByClick);
 
 addBtnCard.addEventListener("click", () => {
+  clearValidation(formCard, validationConfig);
   openModal(popupNewCard);
 });
 
 popupNewCard.addEventListener("click", handleCloseModalByClick);
+
+enableValidation(validationConfig);
