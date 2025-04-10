@@ -1,8 +1,11 @@
+import { config } from "./api";
 export function createCard(
-  { name, link, likes },
+  { name, link, likes, owner, _id },
   deleteCard,
   toggleLike,
-  openImg
+  openImg,
+  currentUserId,
+  openDeletePopup
 ) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardElement = cardTemplate
@@ -18,10 +21,21 @@ export function createCard(
   likeCount.textContent = likes.length;
 
   const deleteBtn = cardElement.querySelector(".card__delete-button");
-  deleteBtn.addEventListener("click", (event) => deleteCard(event));
+  if (owner._id !== currentUserId) {
+    deleteBtn.remove();
+  } else {
+    deleteBtn.addEventListener("click", () =>
+      openDeletePopup(cardElement, _id)
+    );
+  }
 
   const likeButton = cardElement.querySelector(".card__like-button");
-  likeButton.addEventListener("click", () => toggleLike(likeButton));
+  if (likes.some((like) => like._id === currentUserId)) {
+    likeButton.classList.add("card__like-button_is-active");
+  }
+  likeButton.addEventListener("click", () =>
+    toggleLike(likeButton, _id, likes)
+  );
 
   const imageElement = cardElement.querySelector(".card__image");
   imageElement.addEventListener("click", () => openImg(link, name));
@@ -36,6 +50,50 @@ export function deleteCard(event) {
   }
 }
 
-export function toggleLike(likeButton) {
-  likeButton.classList.toggle("card__like-button_is-active");
+export function toggleLike(likeButton, cardId, likes) {
+  const isLiked = likeButton.classList.contains("card__like-button_is-active");
+
+  if (isLiked) {
+    deleteLike(cardId)
+      .then((updatedCard) => {
+        likeButton.classList.remove("card__like-button_is-active");
+        likeButton.nextElementSibling.textContent = updatedCard.likes.length;
+      })
+      .catch((err) => {
+        console.error("Ошибка лайка:", err);
+      });
+  } else {
+    addLike(cardId)
+      .then((updatedCard) => {
+        likeButton.classList.add("card__like-button_is-active");
+        likeButton.nextElementSibling.textContent = updatedCard.likes.length;
+      })
+      .catch((err) => {
+        console.error("Ошибка лайка", err);
+      });
+  }
+}
+
+function deleteLike(cardId) {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+    method: "DELETE",
+    headers: config.headers,
+  }).then((res) => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`);
+  });
+}
+
+function addLike(cardId) {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+    method: "PUT",
+    headers: config.headers,
+  }).then((res) => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`);
+  });
 }

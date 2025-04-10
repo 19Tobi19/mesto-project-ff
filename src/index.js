@@ -12,6 +12,9 @@ import {
   getUser,
   updateUser,
   addCard,
+  deleteCardApi,
+  addLike,
+  deleteLike,
 } from "./scripts/api.js";
 
 const validationConfig = {
@@ -33,7 +36,10 @@ const formCard = popupNewCard.querySelector(".popup__form");
 const cardNameInput = formCard.querySelector(".popup__input_type_card-name");
 const cardLinkInput = formCard.querySelector(".popup__input_type_url");
 const profileAvatar = document.querySelector(".profile__image");
-
+const popupDeleteCard = document.querySelector(".popup_type_deleteCard");
+const formDeleteCard = popupDeleteCard.querySelector(".popup__form_deleteCard");
+let cardToDelete;
+let cardIdToDelete;
 let currentUserId;
 
 Promise.all([getUser(), getInitialCards()])
@@ -44,7 +50,14 @@ Promise.all([getUser(), getInitialCards()])
     currentUserId = userData._id;
 
     cards.forEach((cardData) => {
-      const cardElement = createCard(cardData, deleteCard, toggleLike, openImg);
+      const cardElement = createCard(
+        cardData,
+        deleteCard,
+        toggleLike,
+        openImg,
+        currentUserId,
+        openDeletePopup
+      );
       cardsContainer.append(cardElement);
     });
   })
@@ -74,7 +87,9 @@ formCard.addEventListener("submit", function (event) {
         createdCard,
         deleteCard,
         toggleLike,
-        openImg
+        openImg,
+        currentUserId,
+        openDeletePopup
       );
       cardsContainer.prepend(cardElement);
       closeModal(popupNewCard);
@@ -82,7 +97,7 @@ formCard.addEventListener("submit", function (event) {
       formCard.reset();
     })
     .catch((err) => {
-      console.error("Ошибка при добавлении карточки:", err);
+      console.error("Ошибка добавлениz карточки:", err);
     });
 });
 
@@ -119,15 +134,14 @@ formProfile.addEventListener("submit", (event) => {
       clearValidation(formProfile, validationConfig);
     })
     .catch((err) => {
-      console.error("Ошибка при обновлении профиля:", err);
+      console.error("Ошибка обновления профиля:", err);
     });
 });
 
 editBtnProfile.addEventListener("click", openEditProfilePopup);
-
 editPopupProfile.addEventListener("click", handleCloseModalByClick);
-
 popupImg.addEventListener("click", handleCloseModalByClick);
+popupDeleteCard.addEventListener("click", handleCloseModalByClick);
 
 addBtnCard.addEventListener("click", () => {
   clearValidation(formCard, validationConfig);
@@ -147,3 +161,25 @@ getUser()
   .catch((err) => {
     console.error("Ошибка загрузки профиля:", err);
   });
+
+function openDeletePopup(cardElement, cardId) {
+  cardToDelete = cardElement;
+  cardIdToDelete = cardId;
+  openModal(popupDeleteCard);
+}
+
+formDeleteCard.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!cardIdToDelete) return;
+
+  deleteCardApi(cardIdToDelete)
+    .then(() => {
+      cardToDelete.remove();
+      closeModal(popupDeleteCard);
+      cardToDelete = null;
+      cardIdToDelete = null;
+    })
+    .catch((err) => {
+      console.error("Ошибка удаления карточки:", err);
+    });
+});
