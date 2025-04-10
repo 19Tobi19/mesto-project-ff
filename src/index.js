@@ -1,5 +1,4 @@
 import "./pages/index.css";
-import { initialCards } from "./scripts/cards.js";
 import { createCard, deleteCard, toggleLike } from "./scripts/card.js";
 import {
   openModal,
@@ -7,8 +6,13 @@ import {
   closeEsc,
   handleCloseModalByClick,
 } from "./scripts/modal.js";
-
 import { enableValidation, clearValidation } from "./scripts/validation.js";
+import {
+  getInitialCards,
+  getUser,
+  updateUser,
+  addCard,
+} from "./scripts/api.js";
 
 const validationConfig = {
   formSelector: ".popup__form",
@@ -18,14 +22,7 @@ const validationConfig = {
   inputErrorClass: "popup__input_type_error",
   errorClass: "popup__error_visible",
 };
-
 const cardsContainer = document.querySelector(".places__list");
-
-initialCards.forEach((cardData) => {
-  const cardElement = createCard(cardData, deleteCard, toggleLike, openImg);
-  cardsContainer.append(cardElement);
-});
-
 const popupImage = document.querySelector(".popup__image");
 const popupCaption = document.querySelector(".popup__caption");
 const popup = document.querySelector(".popup_type_image");
@@ -35,6 +32,25 @@ const popupNewCard = document.querySelector(".popup_type_new-card");
 const formCard = popupNewCard.querySelector(".popup__form");
 const cardNameInput = formCard.querySelector(".popup__input_type_card-name");
 const cardLinkInput = formCard.querySelector(".popup__input_type_url");
+const profileAvatar = document.querySelector(".profile__image");
+
+let currentUserId;
+
+Promise.all([getUser(), getInitialCards()])
+  .then(([userData, cards]) => {
+    profileName.textContent = userData.name;
+    profileJob.textContent = userData.about;
+    profileAvatar.style.backgroundImage = `url('${userData.avatar}')`;
+    currentUserId = userData._id;
+
+    cards.forEach((cardData) => {
+      const cardElement = createCard(cardData, deleteCard, toggleLike, openImg);
+      cardsContainer.append(cardElement);
+    });
+  })
+  .catch((err) => {
+    console.error("Ошибка при загрузке данных:", err);
+  });
 
 function openImg(imageLink, imageName) {
   popupImage.src = imageLink;
@@ -47,19 +63,27 @@ function openImg(imageLink, imageName) {
 formCard.addEventListener("submit", function (event) {
   event.preventDefault();
 
-  const cardData = {
+  const newCard = {
     name: cardNameInput.value,
     link: cardLinkInput.value,
   };
 
-  const cardElement = createCard(cardData, deleteCard, toggleLike, openImg);
-
-  cardsContainer.prepend(cardElement);
-
-  closeModal(popupNewCard);
-  clearValidation(formCard, validationConfig);
-
-  formCard.reset();
+  addCard(newCard)
+    .then((createdCard) => {
+      const cardElement = createCard(
+        createdCard,
+        deleteCard,
+        toggleLike,
+        openImg
+      );
+      cardsContainer.prepend(cardElement);
+      closeModal(popupNewCard);
+      clearValidation(formCard, validationConfig);
+      formCard.reset();
+    })
+    .catch((err) => {
+      console.error("Ошибка при добавлении карточки:", err);
+    });
 });
 
 const editBtnProfile = document.querySelector(".profile__edit-button");
@@ -82,11 +106,21 @@ function openEditProfilePopup() {
 formProfile.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  profileName.textContent = nameInput.value;
-  profileJob.textContent = jobInput.value;
+  const newUserData = {
+    name: nameInput.value,
+    about: jobInput.value,
+  };
 
-  closeModal(editPopupProfile);
-  clearValidation(formProfile, validationConfig);
+  updateUser(newUserData)
+    .then((updatedUser) => {
+      profileName.textContent = updatedUser.name;
+      profileJob.textContent = updatedUser.about;
+      closeModal(editPopupProfile);
+      clearValidation(formProfile, validationConfig);
+    })
+    .catch((err) => {
+      console.error("Ошибка при обновлении профиля:", err);
+    });
 });
 
 editBtnProfile.addEventListener("click", openEditProfilePopup);
@@ -103,3 +137,13 @@ addBtnCard.addEventListener("click", () => {
 popupNewCard.addEventListener("click", handleCloseModalByClick);
 
 enableValidation(validationConfig);
+
+getUser()
+  .then((userData) => {
+    profileName.textContent = userData.name;
+    profileJob.textContent = userData.about;
+    profileAvatar.style.backgroundImage = `url('${userData.avatar}')`;
+  })
+  .catch((err) => {
+    console.error("Ошибка загрузки профиля:", err);
+  });
