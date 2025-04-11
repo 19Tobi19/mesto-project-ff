@@ -24,7 +24,13 @@
           <div
             class="profile__image"
             style="background-image: url('<%=require(`./images/avatar.jpg`)%>')"
-          ></div>
+          >
+            <img
+              src="<%=require('./images/edit-icon.svg')%>"
+              class="profile__edit-icon"
+              alt="Редактировать"
+            />
+          </div>
           <div class="profile__info">
             <h1 class="profile__title">Жак-Ив Кусто</h1>
             <button class="profile__edit-button" type="button"></button>
@@ -122,6 +128,29 @@
           <form class="popup__form_deleteCard">
             <h3 class="popup__title">Вы уверены?</h3>
             <button type="submit" class="button popup__button">Да</button>
+          </form>
+          <p class="popup__caption"></p>
+        </div>
+      </div>
+      <div class="popup popup_type_update-avatar popup_is-animated">
+        <div class="popup__content popup__content-update-avatar">
+          <button type="button" class="popup__close"></button>
+          <form class="popup__form popup__form_update-avatar">
+            <h3 class="popup__title popup__title-update">Обновить аватар</h3>
+            <input
+              id="url-update-input"
+              type="url"
+              name="link"
+              class="popup__input popup__input_type_url"
+              placeholder="Ссылка на картинку"
+              required
+              pattern="https?://.*"
+              data-error-message="Введите адрес сайта."
+            />
+            <span class="url-update-input-error popup__input-error"></span>
+            <button type="submit" class="button popup__button">
+              Сохранить
+            </button>
           </form>
           <p class="popup__caption"></p>
         </div>

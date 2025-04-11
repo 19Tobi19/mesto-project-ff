@@ -89,6 +89,18 @@ function deleteLike(cardId) {
     return Promise.reject(`Ошибка: ${res.status}`);
   });
 }
+function updateAvatar(avatarUrl) {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: "PATCH",
+    headers: config.headers,
+    body: JSON.stringify({ avatar: avatarUrl }),
+  }).then((res) => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`);
+  });
+}
 
 export {
   getUser,
@@ -99,4 +111,5 @@ export {
   addLike,
   deleteLike,
   config,
+  updateAvatar,
 };

@@ -1,5 +1,6 @@
 import { config } from "./api";
-export function createCard(
+
+function createCard(
   { name, link, likes, owner, _id },
   deleteCard,
   toggleLike,
@@ -43,14 +44,14 @@ export function createCard(
   return cardElement;
 }
 
-export function deleteCard(event) {
+function deleteCard(event) {
   const cardElement = event.target.closest(".places__item");
   if (cardElement) {
     cardElement.remove();
   }
 }
 
-export function toggleLike(likeButton, cardId, likes) {
+function toggleLike(likeButton, cardId, likes) {
   const isLiked = likeButton.classList.contains("card__like-button_is-active");
 
   if (isLiked) {
@@ -97,3 +98,5 @@ function addLike(cardId) {
     return Promise.reject(`Ошибка: ${res.status}`);
   });
 }
+
+export { createCard, deleteCard, toggleLike };
