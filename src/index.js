@@ -16,6 +16,7 @@ import {
   deleteLike,
   updateAvatar,
 } from "./scripts/api.js";
+import { loaderRender } from "./scripts/utils.js";
 
 const validationConfig = {
   formSelector: ".popup__form",
@@ -59,14 +60,6 @@ const formProfile = editPopupProfile.querySelector(".popup__form");
 let cardToDelete;
 let cardIdToDelete;
 let currentUserId;
-
-function loaderRender(isLoading, btn, loadingText = "Сохранение...") {
-  if (isLoading) {
-    btn.textContent = loadingText;
-  } else {
-    btn.textContent = btn.dataset.defaultText;
-  }
-}
 
 function renderCard(cardData, prepend = false) {
   const cardElement = createCard(
@@ -156,6 +149,9 @@ formCard.addEventListener("submit", function (event) {
     })
     .finally(() => {
       loaderRender(false, submitBtn);
+      // Местные изменения, перенесены сюда
+      clearValidation(formCard, validationConfig); // Очистка валидации
+      addBtnCard.disabled = false; // Разблокировка кнопки добавления карточки
     });
 });
 

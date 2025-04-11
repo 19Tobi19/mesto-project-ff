@@ -1,4 +1,4 @@
-import { config } from "./api";
+import { addLike, deleteLike } from "./api";
 
 function createCard(
   { name, link, likes, owner, _id },
@@ -73,30 +73,6 @@ function toggleLike(likeButton, cardId, likes) {
         console.error("Ошибка лайка", err);
       });
   }
-}
-
-function deleteLike(cardId) {
-  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
-    method: "DELETE",
-    headers: config.headers,
-  }).then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  });
-}
-
-function addLike(cardId) {
-  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
-    method: "PUT",
-    headers: config.headers,
-  }).then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  });
 }
 
 export { createCard, deleteCard, toggleLike };
